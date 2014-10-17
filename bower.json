@@ -8,6 +8,6 @@
     "*.png"
   ],
   "dependencies": {
-    "jquery": "1.10",
+    "jquery": "1.10"
   }
 }
