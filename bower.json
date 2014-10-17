@@ -1,0 +1,13 @@
+{
+  "name": "falcon-menu-aim",
+  "version": "1.0.0",
+  "main": "jquery.menu-aim.js",
+  "ignore": [
+    "example",
+    "*.md",
+    "*.png"
+  ],
+  "dependencies": {
+    "jquery": "1.10",
+  }
+}
