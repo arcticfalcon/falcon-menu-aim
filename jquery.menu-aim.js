@@ -52,6 +52,12 @@
  *
  *          // Function to call when mouse exits a menu row.
  *          exit: function() {},
+ *           
+ *          // Delay to auto close menu.
+ *          exitMenuDelay: 500,
+ *          
+ *          // Function to call when the menu exists by delay.
+ *          delayedExit: function(menu) {}
  *
  *          // Selector for identifying which elements in the menu are rows
  *          // that can trigger the above events. Defaults to "> li".
@@ -70,7 +76,6 @@
  * https://github.com/kamens/jQuery-menu-aim
 */
 (function($) {
-
     $.fn.menuAim = function(opts) {
         // Initialize menu-aim for all elements in jQuery collection
         this.each(function() {
@@ -81,21 +86,25 @@
     };
 
     function init(opts) {
+
         var $menu = $(this),
             activeRow = null,
             mouseLocs = [],
             lastDelayLoc = null,
             timeoutId = null,
+            exitMenuTimeoutId = null,
             options = $.extend({
                 rowSelector: "> li",
                 submenuSelector: "*",
                 submenuDirection: "right",
                 tolerance: 75,  // bigger = more forgivey when entering submenu
+                exitMenuDelay: 0,
                 enter: $.noop,
                 exit: $.noop,
                 activate: $.noop,
                 deactivate: $.noop,
-                exitMenu: $.noop
+                exitMenu: $.noop,
+                delayedExit: $.noop
             }, opts);
 
         var MOUSE_LOCS_TRACKED = 3,  // number of past mouse locations to track
@@ -123,11 +132,28 @@
                 // If exitMenu is supplied and returns true, deactivate the
                 // currently active row on menu exit.
                 if (options.exitMenu(this)) {
-                    if (activeRow) {
-                        options.deactivate(activeRow);
-                    }
 
-                    activeRow = null;
+                    if(options.exitMenuDelay)
+                    {
+                        var _this = this;
+                        exitMenuTimeoutId = setTimeout(function()
+                        {
+                            if (activeRow) {
+                                options.deactivate(activeRow);
+                            }
+
+                            activeRow = null;
+                            options.delayedExit(_this);
+                        }, options.exitMenuDelay)
+                    }
+                    else
+                    {
+                        if (activeRow) {
+                            options.deactivate(activeRow);
+                        }
+
+                        activeRow = null;
+                    }
                 }
             };
 
@@ -139,7 +165,10 @@
                     // Cancel any previous activation delays
                     clearTimeout(timeoutId);
                 }
-
+                if(exitMenuTimeoutId)
+                {
+                    clearTimeout(exitMenuTimeoutId);
+                }
                 options.enter(this);
                 possiblyActivate(this);
             },
