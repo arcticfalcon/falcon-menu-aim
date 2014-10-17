@@ -42,6 +42,12 @@ the relevant row's HTML element as the execution context ('this'):
 
          // Function to call when mouse exits a menu row.
          exit: function() {},
+         
+         // Delay to auto close menu.
+         exitMenuDelay: 500,
+         
+         // Function to call when the menu exists by delay.
+         delayedExit: function(menu) {}
 
          // Function to call when mouse exits the entire menu. If this returns
          // true, the current row's deactivation event and callback function
